@@ -125,6 +125,7 @@ function CreateWorkflow() {
                         <WorkflowStepForm
                           step={step}
                           index={index}
+                          previousSteps={steps.slice(0, index)}
                           onUpdate={handleUpdateStep}
                           onDelete={handleDeleteStep}
                         />
