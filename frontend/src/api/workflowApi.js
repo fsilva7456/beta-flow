@@ -2,8 +2,6 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://beta-flow-production.up.railway.app';
 
-console.log('API URL:', API_URL);
-
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -39,6 +37,12 @@ export const workflowApi = {
   createWorkflow: async (workflowData) => {
     console.log('Calling createWorkflow with data:', workflowData);
     const response = await api.post('/api/v1/workflows', workflowData);
+    return response;
+  },
+
+  updateWorkflow: async (id, workflowData) => {
+    console.log(`Calling updateWorkflow(${id}) with data:`, workflowData);
+    const response = await api.put(`/api/v1/workflows/${id}`, workflowData);
     return response;
   },
 

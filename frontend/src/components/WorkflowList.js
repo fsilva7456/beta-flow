@@ -8,9 +8,12 @@ import {
   Typography,
   Box,
 } from '@mui/material';
-import { PlayArrow } from '@mui/icons-material';
+import { PlayArrow, Edit } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 function WorkflowList({ workflows, onExecute }) {
+  const navigate = useNavigate();
+
   if (!workflows.length) {
     return (
       <Paper sx={{ p: 2, textAlign: 'center' }}>
@@ -27,11 +30,19 @@ function WorkflowList({ workflows, onExecute }) {
             secondaryAction={
               <Box>
                 <Button
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<Edit />}
+                  onClick={() => navigate(`/edit/${workflow.id}`)}
+                  sx={{ mr: 1 }}
+                >
+                  Edit
+                </Button>
+                <Button
                   variant="contained"
                   color="primary"
                   startIcon={<PlayArrow />}
                   onClick={() => onExecute(workflow.id)}
-                  sx={{ mr: 1 }}
                 >
                   Execute
                 </Button>
