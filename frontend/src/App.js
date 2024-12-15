@@ -7,6 +7,7 @@ import theme from './theme';
 import NavBar from './components/NavBar';
 import Home from './pages/Home';
 import CreateWorkflow from './pages/CreateWorkflow';
+import EditWorkflow from './pages/EditWorkflow';
 import ExecutionResults from './pages/ExecutionResults';
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -22,8 +23,6 @@ function App() {
     }
   });
 
-  console.log('App rendering');
-
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
@@ -36,6 +35,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/create" element={<CreateWorkflow />} />
+                  <Route path="/edit/:workflowId" element={<EditWorkflow />} />
                   <Route path="/results/:workflowId" element={<ExecutionResults />} />
                   <Route path="*" element={<Typography>Page not found</Typography>} />
                 </Routes>
