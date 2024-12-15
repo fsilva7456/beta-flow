@@ -10,12 +10,22 @@ import {
   IconButton,
   Box,
   Typography,
+  Tooltip,
+  InputAdornment,
+  Button,
 } from '@mui/material';
-import { Delete, DragIndicator } from '@mui/icons-material';
+import { Delete, DragIndicator, Help } from '@mui/icons-material';
 
-function WorkflowStepForm({ step, index, onUpdate, onDelete }) {
+function WorkflowStepForm({ step, index, previousSteps, onUpdate, onDelete }) {
   const handleChange = (field, value) => {
     onUpdate(index, { ...step, [field]: value });
+  };
+
+  const insertStepReference = (stepName) => {
+    const currentPrompt = step.parameters?.prompt || '';
+    const reference = `{{${stepName}}}`;
+    const newPrompt = currentPrompt + (currentPrompt ? ' ' : '') + reference;
+    handleChange('parameters', { ...step.parameters, prompt: newPrompt });
   };
 
   return (
@@ -59,8 +69,36 @@ function WorkflowStepForm({ step, index, onUpdate, onDelete }) {
           }
           margin="normal"
           multiline
-          rows={2}
+          rows={3}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <Tooltip title="Use {{Step Name}} to reference output from a previous step">
+                  <Help />
+                </Tooltip>
+              </InputAdornment>
+            ),
+          }}
         />
+
+        {previousSteps.length > 0 && (
+          <Box sx={{ mt: 1, mb: 2 }}>
+            <Typography variant="caption" display="block" gutterBottom>
+              Reference previous steps:
+            </Typography>
+            {previousSteps.map((prevStep) => (
+              <Button
+                key={prevStep.step_name}
+                size="small"
+                variant="outlined"
+                sx={{ mr: 1, mb: 1 }}
+                onClick={() => insertStepReference(prevStep.step_name)}
+              >
+                {prevStep.step_name}
+              </Button>
+            ))}
+          </Box>
+        )}
 
         <TextField
           fullWidth
