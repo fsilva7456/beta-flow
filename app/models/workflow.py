@@ -7,7 +7,7 @@ class Workflow(Base):
     __tablename__ = "workflows"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
+    workflow_name = Column(String, index=True)  # Changed from name to workflow_name
     created_at = Column(DateTime, default=datetime.utcnow)
     steps = relationship("WorkflowStep", back_populates="workflow")
 

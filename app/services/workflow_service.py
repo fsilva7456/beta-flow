@@ -15,7 +15,7 @@ class WorkflowService:
         }
 
     async def create_workflow(self, db: Session, workflow_data: WorkflowCreate) -> Workflow:
-        workflow = Workflow(name=workflow_data.workflow_name)
+        workflow = Workflow(workflow_name=workflow_data.workflow_name)  # Match the column name
         db.add(workflow)
         db.flush()
 
@@ -65,7 +65,7 @@ class WorkflowService:
 
         return {
             "workflow_id": workflow.id,
-            "workflow_name": workflow.name,
+            "workflow_name": workflow.workflow_name,
             "results": results
         }
 
