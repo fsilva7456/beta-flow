@@ -1,7 +1,7 @@
 import logging
 from fastapi import FastAPI
 from app.routes import llm, workflow
-from app.database import engine, Base
+from app.database import init_db
 
 # Configure logging
 logging.basicConfig(
@@ -10,8 +10,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
+# Initialize database
+init_db()
 
 app = FastAPI(
     title="Beta Flow API",

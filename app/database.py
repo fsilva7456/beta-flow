@@ -14,6 +14,11 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
+def init_db():
+    from app.models.workflow import Workflow, WorkflowStep
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
 def get_db():
     db = SessionLocal()
     try:
