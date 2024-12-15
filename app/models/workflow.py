@@ -7,7 +7,7 @@ class Workflow(Base):
     __tablename__ = "workflows"
 
     id = Column(Integer, primary_key=True, index=True)
-    workflow_name = Column(String, index=True)  # Changed from name to workflow_name
+    workflow_name = Column(String, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     steps = relationship("WorkflowStep", back_populates="workflow")
 
@@ -19,5 +19,7 @@ class WorkflowStep(Base):
     step_name = Column(String)
     action = Column(String)
     parameters = Column(JSON)
+    condition = Column(JSON)
+    group = Column(String, nullable=True)
     order = Column(Integer)
     workflow = relationship("Workflow", back_populates="steps")
