@@ -1,20 +1,32 @@
 import React from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Container, Typography, Button, Box } from '@mui/material';
+import { Container, Typography, Button, Box, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { workflowApi } from '../api/workflowApi';
 import WorkflowList from '../components/WorkflowList';
 
 function Home() {
+  console.log('Home component rendering');
   const navigate = useNavigate();
 
   const { data: workflows = [], isLoading, error } = useQuery(
     ['workflows'],
-    workflowApi.getAllWorkflows
+    async () => {
+      console.log('Fetching workflows...');
+      try {
+        const result = await workflowApi.getAllWorkflows();
+        console.log('Workflows fetched:', result);
+        return result;
+      } catch (error) {
+        console.error('Error fetching workflows:', error);
+        throw error;
+      }
+    }
   );
 
   const executeMutation = useMutation(
     async (workflowId) => {
+      console.log('Executing workflow:', workflowId);
       return await workflowApi.executeWorkflow(workflowId);
     },
     {
@@ -28,6 +40,8 @@ function Home() {
     executeMutation.mutate(workflowId);
   };
 
+  console.log('Current state:', { workflows, isLoading, error });
+
   if (isLoading) {
     return (
       <Container maxWidth="md" sx={{ py: 4 }}>
@@ -39,7 +53,11 @@ function Home() {
   if (error) {
     return (
       <Container maxWidth="md" sx={{ py: 4 }}>
-        <Typography color="error">Error loading workflows: {error.message}</Typography>
+        <Alert severity="error">
+          Error loading workflows: {error.message}
+          <br />
+          {error.response?.data ? JSON.stringify(error.response.data) : 'No additional error details'}
+        </Alert>
       </Container>
     );
   }
