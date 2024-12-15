@@ -24,11 +24,19 @@ function Home() {
   };
 
   if (isLoading) {
-    return <Typography>Loading workflows...</Typography>;
+    return (
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Typography>Loading workflows...</Typography>
+      </Container>
+    );
   }
 
   if (error) {
-    return <Typography color="error">Error loading workflows: {error.message}</Typography>;
+    return (
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Typography color="error">Error loading workflows: {error.message}</Typography>
+      </Container>
+    );
   }
 
   return (
