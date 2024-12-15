@@ -8,10 +8,6 @@ class ConditionType(str, Enum):
     NOT_EQUALS = "not_equals"
     CONTAINS = "contains"
 
-class OutputReference(BaseModel):
-    step_name: str
-    key: str = "result"
-
 class Condition(BaseModel):
     type: ConditionType
     step_name: str
@@ -24,12 +20,11 @@ class WorkflowStepBase(BaseModel):
     parameters: Dict = Field(default_factory=dict)
     condition: Optional[Condition] = None
     group: Optional[str] = None
-    use_output_from: Optional[OutputReference] = None
 
 class WorkflowStepCreate(WorkflowStepBase):
     pass
 
-class WorkflowStep(WorkflowStepBase):
+class WorkflowStepResponse(WorkflowStepBase):
     id: int
     workflow_id: int
     order: int
@@ -43,11 +38,11 @@ class WorkflowBase(BaseModel):
 class WorkflowCreate(WorkflowBase):
     steps: List[WorkflowStepCreate]
 
-class Workflow(WorkflowBase):
+class WorkflowResponse(BaseModel):
     id: int
     workflow_name: str
     created_at: datetime
-    steps: List[WorkflowStep]
+    steps: List[WorkflowStepResponse]
 
     class Config:
         from_attributes = True
