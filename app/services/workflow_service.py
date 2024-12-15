@@ -45,6 +45,35 @@ class WorkflowService:
         db.refresh(workflow)
         return workflow
 
+    async def update_workflow(self, db: Session, workflow_id: int, workflow_data: WorkflowCreate) -> Workflow:
+        # Get existing workflow
+        workflow = self.get_workflow(db, workflow_id)
+        if not workflow:
+            raise ValueError(f"Workflow {workflow_id} not found")
+
+        # Update workflow name
+        workflow.workflow_name = workflow_data.workflow_name
+
+        # Delete existing steps
+        db.query(WorkflowStep).filter(WorkflowStep.workflow_id == workflow_id).delete()
+
+        # Add new steps
+        for idx, step in enumerate(workflow_data.steps):
+            db_step = WorkflowStep(
+                workflow_id=workflow.id,
+                step_name=step.step_name,
+                action=step.action,
+                parameters=step.parameters,
+                condition=step.condition.dict() if step.condition else None,
+                group=step.group,
+                order=idx
+            )
+            db.add(db_step)
+
+        db.commit()
+        db.refresh(workflow)
+        return workflow
+
     def get_workflow(self, db: Session, workflow_id: int) -> Optional[Workflow]:
         return db.query(Workflow).filter(Workflow.id == workflow_id).first()
 
