@@ -1,6 +1,7 @@
 import logging
 from fastapi import FastAPI
-from app.routes.llm import router as llm_router
+from app.routes import llm, workflow
+from app.database import engine, Base
 
 # Configure logging
 logging.basicConfig(
@@ -9,14 +10,18 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Create database tables
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI(
     title="Beta Flow API",
-    description="API for executing tasks using LLMs",
+    description="API for executing tasks using LLMs and managing workflows",
     version="1.0.0"
 )
 
 # Include routers
-app.include_router(llm_router, prefix="/api/v1")
+app.include_router(llm.router, prefix="/api/v1")
+app.include_router(workflow.router, prefix="/api/v1")
 
 @app.get("/health-check")
 async def health_check():
