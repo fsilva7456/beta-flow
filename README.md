@@ -1,15 +1,16 @@
 # Beta Flow
 
-A FastAPI backend for executing tasks using LLMs and managing workflows.
+A FastAPI backend for executing tasks using LLMs with support for conditional and parallel workflow execution.
 
 ## Features
 
 - LLM Integration with OpenAI's GPT-4 Turbo
 - Workflow Creation and Management
-- Sequential Workflow Execution
+- Conditional Workflow Steps
+- Parallel Step Execution
 - In-memory SQLite Database
 
-## Local Setup
+## Installation and Setup
 
 1. Clone the repository:
    ```bash
@@ -39,51 +40,79 @@ A FastAPI backend for executing tasks using LLMs and managing workflows.
    python -m app.main
    ```
 
-## API Endpoints
+## Workflow Examples
 
-### Workflow Management
+### 1. Conditional Workflow
+Create a workflow where steps execute based on conditions:
 
-#### Create Workflow
-POST `/api/v1/workflows`
-```json
-{
-  "workflow_name": "Example Workflow",
-  "steps": [
+```bash
+curl -X POST "https://beta-flow-production.up.railway.app/api/v1/workflows" \
+-H "Content-Type: application/json" \
+-d "{
+  \"workflow_name\": \"Conditional Example\",
+  \"steps\": [
     {
-      "step_name": "Step 1",
-      "action": "llm-call",
-      "parameters": {
-        "prompt": "What is the capital of France?",
-        "model": "gpt-4-turbo",
-        "temperature": 0.7
+      \"step_name\": \"Initial Question\",
+      \"action\": \"llm-call\",
+      \"parameters\": {
+        \"prompt\": \"Is it raining? Answer only yes or no.\",
+        \"model\": \"gpt-4-turbo\"
+      }
+    },
+    {
+      \"step_name\": \"Rainy Day Response\",
+      \"action\": \"llm-call\",
+      \"parameters\": {
+        \"prompt\": \"Suggest an indoor activity\",
+        \"model\": \"gpt-4-turbo\"
+      },
+      \"condition\": {
+        \"type\": \"equals\",
+        \"step_name\": \"Initial Question\",
+        \"key\": \"result\",
+        \"value\": \"yes\"
       }
     }
   ]
-}
+}"
 ```
 
-#### Execute Workflow
-POST `/api/v1/workflows/{workflow_id}/execute`
+### 2. Parallel Workflow
+Create a workflow with steps that execute in parallel:
 
-#### List Workflows
-GET `/api/v1/workflows`
-
-#### Get Workflow Details
-GET `/api/v1/workflows/{workflow_id}`
-
-### LLM Integration
-
-POST `/api/v1/execute-llm`
-```json
-{
-  "prompt": "Tell me a joke",
-  "model": "gpt-4-turbo",
-  "parameters": {
-    "temperature": 0.7,
-    "max_tokens": 1000
-  }
-}
+```bash
+curl -X POST "https://beta-flow-production.up.railway.app/api/v1/workflows" \
+-H "Content-Type: application/json" \
+-d "{
+  \"workflow_name\": \"Parallel Example\",
+  \"steps\": [
+    {
+      \"step_name\": \"Math Question 1\",
+      \"action\": \"llm-call\",
+      \"parameters\": {
+        \"prompt\": \"What is 2+2?\",
+        \"model\": \"gpt-4-turbo\"
+      },
+      \"group\": \"math-questions\"
+    },
+    {
+      \"step_name\": \"Math Question 2\",
+      \"action\": \"llm-call\",
+      \"parameters\": {
+        \"prompt\": \"What is 3+3?\",
+        \"model\": \"gpt-4-turbo\"
+      },
+      \"group\": \"math-questions\"
+    }
+  ]
+}"
 ```
+
+## Condition Types
+
+- `equals`: Exact match comparison
+- `not_equals`: Inverse match comparison
+- `contains`: Substring matching
 
 ## Running Tests
 
@@ -91,7 +120,11 @@ POST `/api/v1/execute-llm`
 pytest tests/
 ```
 
-## Deployment to Railway
+## API Documentation
+
+Visit `/docs` for the interactive API documentation.
+
+## Deployment
 
 1. Connect your GitHub repository to Railway:
    - Go to [Railway](https://railway.app)
@@ -104,37 +137,8 @@ pytest tests/
      - `OPENAI_API_KEY`: Your OpenAI API key
    - Railway will automatically set the `PORT` variable
 
-## Example Workflow Usage
+## Development
 
-1. Create a workflow:
-```bash
-curl -X POST https://your-app-url/api/v1/workflows \
-  -H "Content-Type: application/json" \
-  -d '{
-    "workflow_name": "Test Workflow",
-    "steps": [
-      {
-        "step_name": "Tell Joke",
-        "action": "llm-call",
-        "parameters": {
-          "prompt": "Tell me a joke",
-          "model": "gpt-4-turbo",
-          "temperature": 0.7
-        }
-      }
-    ]
-  }'
-```
-
-2. Execute the workflow:
-```bash
-curl -X POST https://your-app-url/api/v1/workflows/1/execute
-```
-
-## Future Extensions
-
-- Support for additional action types beyond LLM calls
-- Workflow templates
-- Parallel execution of steps
-- Conditional branching in workflows
-- Persistent database support
+- Database changes require reinitializing the database (handled automatically)
+- Run tests frequently when modifying workflow execution logic
+- Use the mock LLM service in tests to avoid API calls
