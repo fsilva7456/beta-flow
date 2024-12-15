@@ -13,11 +13,16 @@ function Home() {
     workflowApi.getAllWorkflows
   );
 
-  const executeMutation = useMutation(workflowApi.executeWorkflow, {
-    onSuccess: (data, workflowId) => {
-      navigate(`/results/${workflowId}`);
+  const executeMutation = useMutation(
+    async (workflowId) => {
+      return await workflowApi.executeWorkflow(workflowId);
     },
-  });
+    {
+      onSuccess: (data, workflowId) => {
+        navigate(`/results/${workflowId}`);
+      },
+    }
+  );
 
   const handleExecute = (workflowId) => {
     executeMutation.mutate(workflowId);

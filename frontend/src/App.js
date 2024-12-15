@@ -9,9 +9,9 @@ import Home from './pages/Home';
 import CreateWorkflow from './pages/CreateWorkflow';
 import ExecutionResults from './pages/ExecutionResults';
 
-const queryClient = new QueryClient();
-
 function App() {
+  const queryClient = new QueryClient();
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
