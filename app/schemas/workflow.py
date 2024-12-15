@@ -10,7 +10,7 @@ class WorkflowStepBase(BaseModel):
 class WorkflowStepCreate(WorkflowStepBase):
     pass
 
-class WorkflowStep(WorkflowStepBase):
+class WorkflowStepResponse(WorkflowStepBase):
     id: int
     workflow_id: int
     order: int
@@ -24,10 +24,11 @@ class WorkflowBase(BaseModel):
 class WorkflowCreate(WorkflowBase):
     steps: List[WorkflowStepCreate]
 
-class Workflow(WorkflowBase):
+class WorkflowResponse(WorkflowBase):
     id: int
+    workflow_name: str
     created_at: datetime
-    steps: List[WorkflowStep]
+    steps: List[WorkflowStepResponse]
 
     class Config:
         from_attributes = True
