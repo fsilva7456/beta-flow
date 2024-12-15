@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Container, Typography, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { workflowApi } from '../api/workflowApi';
@@ -7,7 +7,6 @@ import WorkflowList from '../components/WorkflowList';
 
 function Home() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   const { data: workflows = [], isLoading, error } = useQuery(
     ['workflows'],
