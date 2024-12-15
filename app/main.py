@@ -1,7 +1,8 @@
 import logging
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.routes import llm, workflow
-from app.database import init_db
+from app.database import engine, Base
 
 # Configure logging
 logging.basicConfig(
@@ -10,13 +11,22 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Initialize database
-init_db()
+# Create database tables
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Beta Flow API",
     description="API for executing tasks using LLMs and managing workflows",
     version="1.0.0"
+)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, replace with your frontend domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Include routers
