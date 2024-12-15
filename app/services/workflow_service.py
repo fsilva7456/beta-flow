@@ -65,6 +65,21 @@ class WorkflowService:
             return condition["value"] in value
         return False
 
+    def _process_output_references(self, parameters: Dict, step_results: List[StepResult]) -> Dict:
+        processed_params = parameters.copy()
+        for key, value in parameters.items():
+            if isinstance(value, str) and value.startswith('{{') and value.endswith('}}'): 
+                ref_parts = value[2:-2].strip().split('.')
+                if len(ref_parts) == 2:
+                    step_name, param = ref_parts
+                    referenced_step = next(
+                        (r for r in step_results if r.step_name == step_name),
+                        None
+                    )
+                    if referenced_step and hasattr(referenced_step, param):
+                        processed_params[key] = getattr(referenced_step, param)
+        return processed_params
+
     async def _execute_step(self, step: WorkflowStep, step_results: List[StepResult]) -> StepResult:
         try:
             if step.condition and not self._evaluate_condition(step.condition, step_results):
@@ -78,7 +93,10 @@ class WorkflowService:
             if not handler:
                 raise ValueError(f"Unsupported action: {step.action}")
 
-            result = await handler(step.parameters)
+            # Process parameters for output references
+            processed_params = self._process_output_references(step.parameters, step_results)
+            
+            result = await handler(processed_params)
             return StepResult(
                 step_name=step.step_name,
                 result=result
