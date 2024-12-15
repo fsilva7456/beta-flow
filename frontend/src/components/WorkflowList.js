@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   List,
   ListItem,
@@ -12,8 +11,6 @@ import {
 import { PlayArrow } from '@mui/icons-material';
 
 function WorkflowList({ workflows, onExecute }) {
-  const navigate = useNavigate();
-
   if (!workflows.length) {
     return (
       <Paper sx={{ p: 2, textAlign: 'center' }}>

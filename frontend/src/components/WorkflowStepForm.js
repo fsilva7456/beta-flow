@@ -10,7 +10,6 @@ import {
   IconButton,
   Box,
   Typography,
-  Collapse,
 } from '@mui/material';
 import { Delete, DragIndicator } from '@mui/icons-material';
 
