@@ -1,6 +1,13 @@
 # Beta Flow
 
-A FastAPI backend for executing tasks using LLMs, specifically designed to work with OpenAI's GPT-4 Turbo model.
+A FastAPI backend for executing tasks using LLMs and managing workflows.
+
+## Features
+
+- LLM Integration with OpenAI's GPT-4 Turbo
+- Workflow Creation and Management
+- Sequential Workflow Execution
+- In-memory SQLite Database
 
 ## Local Setup
 
@@ -32,6 +39,58 @@ A FastAPI backend for executing tasks using LLMs, specifically designed to work 
    python -m app.main
    ```
 
+## API Endpoints
+
+### Workflow Management
+
+#### Create Workflow
+POST `/api/v1/workflows`
+```json
+{
+  "workflow_name": "Example Workflow",
+  "steps": [
+    {
+      "step_name": "Step 1",
+      "action": "llm-call",
+      "parameters": {
+        "prompt": "What is the capital of France?",
+        "model": "gpt-4-turbo",
+        "temperature": 0.7
+      }
+    }
+  ]
+}
+```
+
+#### Execute Workflow
+POST `/api/v1/workflows/{workflow_id}/execute`
+
+#### List Workflows
+GET `/api/v1/workflows`
+
+#### Get Workflow Details
+GET `/api/v1/workflows/{workflow_id}`
+
+### LLM Integration
+
+POST `/api/v1/execute-llm`
+```json
+{
+  "prompt": "Tell me a joke",
+  "model": "gpt-4-turbo",
+  "parameters": {
+    "temperature": 0.7,
+    "max_tokens": 1000
+  }
+}
+```
+
+## Running Tests
+
+```bash
+pytest tests/
+```
+
 ## Deployment to Railway
 
 1. Connect your GitHub repository to Railway:
@@ -45,61 +104,37 @@ A FastAPI backend for executing tasks using LLMs, specifically designed to work 
      - `OPENAI_API_KEY`: Your OpenAI API key
    - Railway will automatically set the `PORT` variable
 
-3. Deploy:
-   - Railway will automatically deploy your application
-   - Each push to main will trigger a new deployment
+## Example Workflow Usage
 
-## Testing the API
-
-### Health Check
-
+1. Create a workflow:
 ```bash
-curl https://your-app-url/health-check
-```
-
-Expected response:
-```json
-{"status": "ok"}
-```
-
-### Execute LLM
-
-```bash
-curl -X POST https://your-app-url/api/v1/execute-llm \
+curl -X POST https://your-app-url/api/v1/workflows \
   -H "Content-Type: application/json" \
   -d '{
-    "prompt": "What is the capital of France?",
-    "model": "gpt-4-turbo",
-    "parameters": {
-      "temperature": 0.7,
-      "max_tokens": 1000
-    }
+    "workflow_name": "Test Workflow",
+    "steps": [
+      {
+        "step_name": "Tell Joke",
+        "action": "llm-call",
+        "parameters": {
+          "prompt": "Tell me a joke",
+          "model": "gpt-4-turbo",
+          "temperature": 0.7
+        }
+      }
+    ]
   }'
 ```
 
-Expected response format:
-```json
-{
-  "result": "Paris is the capital of France..."
-}
+2. Execute the workflow:
+```bash
+curl -X POST https://your-app-url/api/v1/workflows/1/execute
 ```
 
-## API Documentation
+## Future Extensions
 
-Once deployed, visit `https://your-app-url/docs` for the interactive API documentation.
-
-## Error Handling
-
-The API includes comprehensive error handling for:
-- Invalid input validation
-- Missing API keys
-- OpenAI API errors
-- Network issues
-
-## Default Configuration
-
-- Default model: `gpt-4-turbo`
-- Default temperature: 0.7
-- Default max tokens: 1000
-
-These can be overridden in the API request.
+- Support for additional action types beyond LLM calls
+- Workflow templates
+- Parallel execution of steps
+- Conditional branching in workflows
+- Persistent database support
